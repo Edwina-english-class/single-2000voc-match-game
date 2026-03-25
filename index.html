@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1200單 單字練習</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d2e;
+    --card: #222540;
+    --accent: #7c6af7;
+    --accent2: #f7936a;
+    --green: #4ade80;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --text: #e8eaf6;
+    --muted: #8b8fa8;
+    --border: #2e3150;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(124,106,247,0.12) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(247,147,106,0.08) 0%, transparent 60%);
+  }
+
+  #app {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* ---- START SCREEN ---- */
+  #start-screen {
+    text-align: center;
+    animation: fadeIn 0.6s ease;
+  }
+
+  .logo {
+    font-size: 72px;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  h1 {
+    font-size: 2.6rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #7c6af7, #f7936a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 36px;
+    font-weight: 600;
+  }
+
+  .info-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .info-card .num {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--accent);
+    display: block;
+  }
+
+  .info-card .label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .btn-start {
+    background: linear-gradient(135deg, #7c6af7, #a78bfa);
+    color: white;
+    border: none;
+    padding: 18px 48px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 24px rgba(124,106,247,0.4);
+    font-family: 'Nunito', sans-serif;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-start:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(124,106,247,0.5);
+  }
+
+  .btn-start:active { transform: translateY(0); }
+
+  /* ---- GAME SCREEN ---- */
+  #game-screen { animation: fadeIn 0.4s ease; }
+
+  .game-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .progress-info {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .progress-info span {
+    color: var(--text);
+    font-size: 1.1rem;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    margin: 0 16px;
+    height: 8px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7c6af7, #f7936a);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+
+  .score-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: var(--green);
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 36px 32px 32px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #7c6af7, #f7936a);
+  }
+
+  .q-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .q-word {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .attempt-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  .dot.wrong { background: var(--red); }
+
+  /* Feedback banner */
+  .feedback-banner {
+    border-radius: 16px;
+    padding: 14px 24px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+  }
+
+  .feedback-banner.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .feedback-banner.correct {
+    background: rgba(74,222,128,0.15);
+    border: 2px solid rgba(74,222,128,0.4);
+    color: var(--green);
+  }
+
+  .feedback-banner.wrong {
+    background: rgba(248,113,113,0.15);
+    border: 2px solid rgba(248,113,113,0.3);
+    color: var(--red);
+  }
+
+  /* Choices */
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .choice-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(124,106,247,0.1);
+    transform: translateY(-2px);
+  }
+
+  .choice-btn:active:not(:disabled) { transform: translateY(0); }
+
+  .choice-btn.correct-ans {
+    border-color: var(--green);
+    background: rgba(74,222,128,0.12);
+    color: var(--green);
+  }
+
+  .choice-btn.wrong-ans {
+    border-color: var(--red);
+    background: rgba(248,113,113,0.12);
+    color: var(--red);
+  }
+
+  .choice-btn:disabled { cursor: default; }
+
+  /* ---- RESULT SCREEN ---- */
+  #result-screen { animation: fadeIn 0.5s ease; }
+
+  .result-hero {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .result-emoji {
+    font-size: 64px;
+    display: block;
+    margin-bottom: 12px;
+    animation: bounceIn 0.5s ease;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .result-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  .result-score {
+    font-size: 1.1rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .result-score span { color: var(--accent); font-size: 1.4rem; }
+
+  .result-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-box .num {
+    font-size: 2rem;
+    font-weight: 900;
+    display: block;
+  }
+
+  .stat-box .lbl {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .stat-box.correct .num { color: var(--green); }
+  .stat-box.wrong .num { color: var(--red); }
+
+  /* Review list */
+  .review-section h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+
+  .review-list::-webkit-scrollbar { width: 4px; }
+  .review-list::-webkit-scrollbar-track { background: var(--surface); border-radius: 4px; }
+  .review-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .review-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+  }
+
+  .review-item.wrong-item {
+    border-color: rgba(248,113,113,0.35);
+    background: rgba(248,113,113,0.06);
+  }
+
+  .review-item .ri-num {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--muted);
+    min-width: 20px;
+  }
+
+  .review-item .ri-icon {
+    font-size: 1.1rem;
+    min-width: 22px;
+    text-align: center;
+  }
+
+  .review-item .ri-en {
+    font-weight: 800;
+    font-size: 1rem;
+    flex: 1;
+  }
+
+  .review-item.wrong-item .ri-en { color: var(--red); }
+  .review-item.correct-item .ri-en { color: var(--green); }
+
+  .review-item .ri-zh {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: right;
+    flex: 1;
+  }
+
+  .btn-again {
+    width: 100%;
+    background: linear-gradient(135deg, #7c6af7, #a78bfa);
+    color: white;
+    border: none;
+    padding: 18px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(124,106,247,0.35);
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .btn-again:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(124,106,247,0.45);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Shake animation for wrong */
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+
+  .shake { animation: shake 0.4s ease; }
+
+  .hidden { display: none !important; }
+
+  /* ---- MUSIC BUTTON ---- */
+  .music-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    z-index: 999;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .music-btn:hover {
+    background: var(--accent);
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(124,106,247,0.4);
+  }
+  .music-btn.playing {
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(124,106,247,0.3), 0 4px 16px rgba(124,106,247,0.35);
+    animation: musicPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes musicPulse {
+    0%,100% { box-shadow: 0 0 0 3px rgba(124,106,247,0.3), 0 4px 16px rgba(124,106,247,0.35); }
+    50%      { box-shadow: 0 0 0 6px rgba(124,106,247,0.15), 0 4px 20px rgba(124,106,247,0.45); }
+  }
+</style>
+</head>
+<body>
+<button class="music-btn" id="music-btn" onclick="toggleMusic()" title="背景音樂">🎵</button>
+
+<div id="app">
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <div class="logo">📚</div>
+    <h1>1200單<br>單字練習</h1>
+    <p class="subtitle">English–Chinese Vocabulary Practice</p>
+    <div class="info-cards">
+      <div class="info-card">
+        <span class="num">1180</span>
+        <span class="label">總單字數</span>
+      </div>
+      <div class="info-card">
+        <span class="num">20</span>
+        <span class="label">每回題數</span>
+      </div>
+      <div class="info-card">
+        <span class="num">4</span>
+        <span class="label">選項數</span>
+      </div>
+    </div>
+    <button class="btn-start" onclick="startGame()">開始練習 🚀</button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="game-screen" class="hidden">
+    <div class="game-header">
+      <div class="progress-info">題 <span id="q-current">1</span>/20</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar" style="width:5%"></div>
+      </div>
+      <div class="score-badge">✓ <span id="score-display">0</span></div>
+    </div>
+
+    <div class="question-card" id="question-card">
+      <div class="q-label">英文是什麼意思？</div>
+      <div class="q-word" id="q-word"></div>
+      <div class="attempt-dots" id="attempt-dots"></div>
+    </div>
+
+    <div class="feedback-banner" id="feedback-banner"></div>
+
+    <div class="choices" id="choices"></div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="result-screen" class="hidden">
+    <div class="result-hero">
+      <span class="result-emoji" id="result-emoji">🎉</span>
+      <div class="result-title" id="result-title">練習完成！</div>
+      <div class="result-score">答對 <span id="final-correct">0</span> / 20 題</div>
+    </div>
+
+    <div class="result-stats">
+      <div class="stat-box correct">
+        <span class="num" id="rs-correct">0</span>
+        <span class="lbl">✓ 答對</span>
+      </div>
+      <div class="stat-box wrong">
+        <span class="num" id="rs-wrong">0</span>
+        <span class="lbl">✗ 答錯</span>
+      </div>
+    </div>
+
+    <div class="review-section">
+      <h3>📝 本回複習</h3>
+      <div class="review-list" id="review-list"></div>
+    </div>
+
+    <button class="btn-again" onclick="startGame()">🔄 再玩一次（新題目）</button>
+  </div>
+
+</div>
+
+<script>
+const VOCAB = [{"english":"people","chinese":"人們；人民（複數）"},{"english":"person","chinese":"人（單數）"},{"english":"guy","chinese":"傢伙"},{"english":"man","chinese":"男人"},{"english":"woman","chinese":"女人"},{"english":"kid","chinese":"小孩"},{"english":"baby","chinese":"嬰兒"},{"english":"child","chinese":"小孩（單數）"},{"english":"children","chinese":"小孩們（複數）"},{"english":"teenager","chinese":"青少年"},{"english":"king","chinese":"國王"},{"english":"queen","chinese":"皇后"},{"english":"prince","chinese":"王子"},{"english":"princess","chinese":"公主"},{"english":"foreigner","chinese":"外國人"},{"english":"neighbor","chinese":"鄰居"},{"english":"stranger","chinese":"陌生人"},{"english":"visitor","chinese":"訪客"},{"english":"fool","chinese":"傻子"},{"english":"giant","chinese":"巨人"},{"english":"family","chinese":"家庭"},{"english":"parents","chinese":"父（母）親"},{"english":"father","chinese":"父親"},{"english":"mother","chinese":"母親"},{"english":"grandfather","chinese":"祖父"},{"english":"grandmoter","chinese":"祖母"},{"english":"brother","chinese":"兄弟"},{"english":"sister","chinese":"姊妹"},{"english":"son","chinese":"兒子"},{"english":"daughter","chinese":"女兒"},{"english":"husband","chinese":"丈夫"},{"english":"wife","chinese":"妻子"},{"english":"uncle","chinese":"伯（叔）父"},{"english":"aunt","chinese":"伯（叔）母"},{"english":"cousin","chinese":"堂表兄弟姊妹"},{"english":"relative","chinese":"親戚"},{"english":"born","chinese":"出生"},{"english":"grow","chinese":"成長"},{"english":"live","chinese":"住；活著"},{"english":"married","chinese":"已婚的"},{"english":"job","chinese":"工作"},{"english":"work","chinese":"工作"},{"english":"worker","chinese":"工人"},{"english":"business","chinese":"生意"},{"english":"businessman","chinese":"商人"},{"english":"boss","chinese":"老板"},{"english":"secretary","chinese":"秘書"},{"english":"shopkeeper","chinese":"店主"},{"english":"clerk","chinese":"店員"},{"english":"salesman","chinese":"推銷員"},{"english":"actor","chinese":"男演員"},{"english":"actress","chinese":"女演員"},{"english":"singer","chinese":"歌手"},{"english":"cook","chinese":"廚師；煮飯"},{"english":"waiter","chinese":"男服務生"},{"english":"waitress","chinese":"女服務生"},{"english":"dentist","chinese":"牙醫"},{"english":"doctor","chinese":"醫生"},{"english":"nurse","chinese":"護士"},{"english":"driver","chinese":"駕駛人；司機"},{"english":"engineer","chinese":"工程師"},{"english":"lawyer","chinese":"律師"},{"english":"farmer","chinese":"農夫"},{"english":"fisherman","chinese":"漁夫"},{"english":"mailman (mail carrier)","chinese":"郵差"},{"english":"police","chinese":"警察"},{"english":"officer","chinese":"官員"},{"english":"reporter","chinese":"記者"},{"english":"soldier","chinese":"軍人"},{"english":"writer","chinese":"作家"},{"english":"artisit","chinese":"藝術家"},{"english":"scientist","chinese":"科學家"},{"english":"firefighter","chinese":"消防員"},{"english":"housewife","chinese":"家庭主婦"},{"english":"Dr.","chinese":"醫生"},{"english":"Mr.","chinese":"先生"},{"english":"Mrs.","chinese":"太太"},{"english":"Miss","chinese":"小姐"},{"english":"Ms.","chinese":"女士"},{"english":"sir","chinese":"先生"},{"english":"beautiful","chinese":"美麗的"},{"english":"pretty","chinese":"漂亮的"},{"english":"cute","chinese":"可愛的"},{"english":"lovely","chinese":"可愛的"},{"english":"handsome","chinese":"英俊的"},{"english":"ugly","chinese":"醜的"},{"english":"slim","chinese":"苗條的"},{"english":"thin","chinese":"瘦的"},{"english":"fat","chinese":"胖的"},{"english":"heavy","chinese":"重的"},{"english":"thick","chinese":"厚的；濃密的"},{"english":"short","chinese":"短的"},{"english":"tall","chinese":"高的"},{"english":"old","chinese":"老的；舊的"},{"english":"young","chinese":"年輕的"},{"english":"brave","chinese":"勇敢的"},{"english":"busy","chinese":"忙碌的"},{"english":"successful","chinese":"成功的"},{"english":"wise","chinese":"明智的"},{"english":"smart","chinese":"聰明的"},{"english":"bright","chinese":"明亮的；聰明的"},{"english":"stupid","chinese":"笨的"},{"english":"shy","chinese":"害羞的"},{"english":"blind","chinese":"瞎的"},{"english":"honest","chinese":"誠實的"},{"english":"polite","chinese":"有禮貌的"},{"english":"proud","chinese":"驕傲的"},{"english":"rich","chinese":"有錢的"},{"english":"poor","chinese":"貧困的；可憐的"},{"english":"careful","chinese":"仔細的"},{"english":"famous","chinese":"有名的"},{"english":"popular","chinese":"受歡迎的"},{"english":"unhappy","chinese":"不快樂的"},{"english":"terrible","chinese":"糟透的"},{"english":"friendly","chinese":"友善的"},{"english":"kind","chinese":"親切的"},{"english":"mean","chinese":"刻薄的；吝嗇的"},{"english":"funny","chinese":"好笑的"},{"english":"serious","chinese":"嚴肅的；認真的"},{"english":"hard-working","chinese":"努力工作的"},{"english":"lazy","chinese":"懶惰的"},{"english":"lonely","chinese":"寂寞的"},{"english":"mad","chinese":"瘋狂的"},{"english":"angry","chinese":"生氣的"},{"english":"bored","chinese":"感到厭煩的"},{"english":"boring","chinese":"無聊的"},{"english":"excited","chinese":"感到興奮的"},{"english":"exciting","chinese":"令人興奮的"},{"english":"interested","chinese":"感興趣的"},{"english":"intersting","chinese":"有趣的"},{"english":"worried","chinese":"擔心的"},{"english":"scared","chinese":"害怕的"},{"english":"tired","chinese":"疲累的"},{"english":"crazy","chinese":"瘋狂的"},{"english":"nervous","chinese":"緊張的"},{"english":"quiet","chinese":"安靜的"},{"english":"noisy","chinese":"吵雜的；喧鬧的"},{"english":"strange","chinese":"奇怪的；陌生的"},{"english":"head","chinese":"頭"},{"english":"face","chinese":"臉"},{"english":"eye","chinese":"眼睛"},{"english":"ear","chinese":"耳朵"},{"english":"nose","chinese":"鼻子"},{"english":"mouth","chinese":"嘴巴"},{"english":"lip","chinese":"嘴唇"},{"english":"tooth","chinese":"牙齒（單數）"},{"english":"teeth","chinese":"牙齒（複數）"},{"english":"hair","chinese":"頭髮"},{"english":"body","chinese":"身體"},{"english":"back","chinese":"背"},{"english":"neck","chinese":"脖子；頸部"},{"english":"shoulder","chinese":"肩膀"},{"english":"hand","chinese":"手"},{"english":"arm","chinese":"手臂"},{"english":"finger","chinese":"手指"},{"english":"nail","chinese":"指甲"},{"english":"foot","chinese":"腳（單數）"},{"english":"feet","chinese":"腳（複數）"},{"english":"knee","chinese":"膝蓋"},{"english":"leg","chinese":"腿"},{"english":"toe","chinese":"腳趾"},{"english":"bottom","chinese":"臀部；屁股"},{"english":"heart","chinese":"心"},{"english":"stomach","chinese":"胃"},{"english":"throat","chinese":"喉嚨"},{"english":"health","chinese":"健康"},{"english":"healthy","chinese":"健康的"},{"english":"sick","chinese":"生病的"},{"english":"weak","chinese":"弱的"},{"english":"strong","chinese":"強壯的"},{"english":"well","chinese":"健康的"},{"english":"comfortable","chinese":"舒適的"},{"english":"cold","chinese":"感冒"},{"english":"headache","chinese":"頭痛"},{"english":"stomachache","chinese":"胃痛"},{"english":"fever","chinese":"發燒"},{"english":"running nose","chinese":"流鼻水"},{"english":"cough","chinese":"咳嗽"},{"english":"sore","chinese":"疼痛的"},{"english":"sore throat","chinese":"喉嚨痛"},{"english":"medicine","chinese":"藥"},{"english":"death","chinese":"死亡"},{"english":"hundred","chinese":"百"},{"english":"thousand","chinese":"千"},{"english":"million","chinese":"百萬"},{"english":"first","chinese":"第一的"},{"english":"second","chinese":"第二（的）"},{"english":"third","chinese":"第三（的）"},{"english":"last","chinese":"最後的"},{"english":"all","chinese":"全部的"},{"english":"a few","chinese":"一些（+可數）"},{"english":"a little","chinese":"一些（不可數）"},{"english":"lot","chinese":"許多"},{"english":"any","chinese":"任何的"},{"english":"both","chinese":"兩者都"},{"english":"few","chinese":"極少數的（+可數）"},{"english":"less","chinese":"較少的"},{"english":"little","chinese":"極少數的（+不可數）"},{"english":"many","chinese":"許多的（+可數）"},{"english":"more","chinese":"更多的"},{"english":"much","chinese":"許多（+不可數）"},{"english":"number","chinese":"號碼"},{"english":"several","chinese":"幾個的"},{"english":"some","chinese":"一些"},{"english":"total","chinese":"總計"},{"english":"size","chinese":"尺寸"},{"english":"meter","chinese":"公尺"},{"english":"centimeter","chinese":"公分"},{"english":"kilometer","chinese":"公里"},{"english":"gram","chinese":"公克"},{"english":"kilogram","chinese":"公斤"},{"english":"foot","chinese":"呎（單數）"},{"english":"feet","chinese":"呎（複數）"},{"english":"inch","chinese":"英吋"},{"english":"mile","chinese":"英里；哩"},{"english":"yard","chinese":"碼；庭院"},{"english":"pound","chinese":"磅"},{"english":"circle","chinese":"圓圈"},{"english":"dot","chinese":"點"},{"english":"line","chinese":"行"},{"english":"point","chinese":"得分"},{"english":"row","chinese":"一排"},{"english":"shape","chinese":"形狀"},{"english":"square","chinese":"正方形的"},{"english":"angle","chinese":"角；邊角"},{"english":"deep","chinese":"深的"},{"english":"far","chinese":"遠的"},{"english":"high","chinese":"高的"},{"english":"large","chinese":"大的"},{"english":"light","chinese":"輕的"},{"english":"long","chinese":"長的"},{"english":"low","chinese":"低的"},{"english":"medium","chinese":"中等的"},{"english":"straight","chinese":"直的"},{"english":"wide","chinese":"寬的"},{"english":"narrow","chinese":"狹窄的"},{"english":"round","chinese":"圓形的"},{"english":"bottle","chinese":"一瓶(子)"},{"english":"cup","chinese":"一(茶)杯"},{"english":"dozen","chinese":"（一）打"},{"english":"glass","chinese":"一(玻璃)杯"},{"english":"pack","chinese":"包"},{"english":"package","chinese":"包裹"},{"english":"pair","chinese":"一雙"},{"english":"piece","chinese":"片；塊"},{"english":"height","chinese":"高度"},{"english":"morning","chinese":"早上"},{"english":"noon","chinese":"中午"},{"english":"afternoon","chinese":"下午"},{"english":"evening","chinese":"傍晚"},{"english":"night","chinese":"晚上"},{"english":"Monday","chinese":"星期一"},{"english":"Tuesday","chinese":"星期二"},{"english":"Wednesday","chinese":"星期三"},{"english":"Thursday","chinese":"星期四"},{"english":"Friday","chinese":"星期五"},{"english":"Saturday","chinese":"星期六"},{"english":"Sunday","chinese":"星期日"},{"english":"week","chinese":"星期"},{"english":"weekend","chinese":"週末"},{"english":"month","chinese":"月份"},{"english":"January","chinese":"一月"},{"english":"February","chinese":"二月"},{"english":"March","chinese":"三月"},{"english":"April","chinese":"四月"},{"english":"May","chinese":"五月"},{"english":"June","chinese":"六月"},{"english":"July","chinese":"七月"},{"english":"August","chinese":"八月"},{"english":"September","chinese":"九月"},{"english":"October","chinese":"十月"},{"english":"November","chinese":"十一月"},{"english":"December","chinese":"十二月"},{"english":"season","chinese":"季節"},{"english":"spring","chinese":"春天"},{"english":"summer","chinese":"夏天"},{"english":"fall / autumn","chinese":"秋天"},{"english":"winter","chinese":"冬天"},{"english":"clock","chinese":"時鐘"},{"english":"watch","chinese":"手錶"},{"english":"a.m.","chinese":"上午"},{"english":"p.m.","chinese":"下午"},{"english":"half","chinese":"一半"},{"english":"hour","chinese":"小時"},{"english":"minute","chinese":"分鐘"},{"english":"second","chinese":"秒"},{"english":"moment","chinese":"片刻"},{"english":"o'clock","chinese":"點鐘"},{"english":"past","chinese":"經過；以前"},{"english":"quarter","chinese":"15分鐘"},{"english":"ago","chinese":"以前"},{"english":"already","chinese":"已經"},{"english":"early","chinese":"早的"},{"english":"late","chinese":"晚的"},{"english":"later","chinese":"稍後"},{"english":"next","chinese":"下一個"},{"english":"now","chinese":"現在"},{"english":"once","chinese":"曾經"},{"english":"day","chinese":"日子"},{"english":"today","chinese":"今天"},{"english":"tonight","chinese":"今晚"},{"english":"tomorrow","chinese":"明天"},{"english":"yesterday","chinese":"昨天"},{"english":"year","chinese":"年"},{"english":"future","chinese":"未來"},{"english":"soon","chinese":"不久；即將"},{"english":"price","chinese":"價格"},{"english":"dollar","chinese":"元"},{"english":"change","chinese":"零錢"},{"english":"cent","chinese":"（一）分錢"},{"english":"borrow","chinese":"借入"},{"english":"lend","chinese":"借出"},{"english":"cost","chinese":"價值"},{"english":"pay","chinese":"付錢"},{"english":"spend","chinese":"花費"},{"english":"cheap","chinese":"便宜的"},{"english":"expensive","chinese":"昂貴的"},{"english":"breakfast","chinese":"早餐"},{"english":"lunch","chinese":"午餐"},{"english":"dinner","chinese":"晚餐"},{"english":"meal","chinese":"一餐"},{"english":"snack","chinese":"點心"},{"english":"afternoon tea","chinese":"下午茶"},{"english":"order","chinese":"點餐"},{"english":"menu","chinese":"菜單"},{"english":"bake","chinese":"烘烤"},{"english":"boil","chinese":"煮沸"},{"english":"burn","chinese":"著火；燙傷；燃燒"},{"english":"drink","chinese":"喝"},{"english":"coffee","chinese":"咖啡"},{"english":"juice","chinese":"果汁"},{"english":"tea","chinese":"茶"},{"english":"butter","chinese":"奶油"},{"english":"oil","chinese":"油"},{"english":"salt","chinese":"鹽"},{"english":"sugar","chinese":"糖"},{"english":"sweet","chinese":"甜的"},{"english":"yummy","chinese":"好吃的"},{"english":"delicious","chinese":"美味的"},{"english":"thirsty","chinese":"口渴的"},{"english":"hungry","chinese":"飢餓的"},{"english":"full","chinese":"滿的；吃飽的"},{"english":"hot","chinese":"熱的"},{"english":"ice","chinese":"冰"},{"english":"cream","chinese":"冰淇淋"},{"english":"chocolate","chinese":"巧克力"},{"english":"cookie","chinese":"餅乾"},{"english":"pie","chinese":"派"},{"english":"candy","chinese":"糖果"},{"english":"cheese","chinese":"乳酪"},{"english":"popcorn","chinese":"爆米花"},{"english":"toast","chinese":"土司；烘烤"},{"english":"bread","chinese":"麵包"},{"english":"bun","chinese":"小圓麵包"},{"english":"sandwich","chinese":"三明治"},{"english":"salad","chinese":"沙拉"},{"english":"fries (French fries)","chinese":"炸薯條"},{"english":"ham","chinese":"火腿"},{"english":"hamburger","chinese":"漢堡"},{"english":"hot dog","chinese":"熱狗"},{"english":"pizza","chinese":"披薩"},{"english":"meat","chinese":"肉"},{"english":"pork","chinese":"豬肉"},{"english":"beef","chinese":"牛肉"},{"english":"steak","chinese":"牛排"},{"english":"chicken","chinese":"雞肉"},{"english":"fish","chinese":"魚肉"},{"english":"seafood","chinese":"海鮮"},{"english":"noodles","chinese":"麵條"},{"english":"rice","chinese":"米飯"},{"english":"soup","chinese":"湯"},{"english":"vegetable","chinese":"蔬菜"},{"english":"bean","chinese":"豆"},{"english":"pumpkin","chinese":"南瓜"},{"english":"grape","chinese":"葡萄"},{"english":"guava","chinese":"芭樂"},{"english":"lemon","chinese":"檸檬"},{"english":"orange","chinese":"柳橙"},{"english":"papaya","chinese":"木瓜"},{"english":"peach","chinese":"桃子"},{"english":"pear","chinese":"梨子"},{"english":"strawberry","chinese":"草莓"},{"english":"tomato","chinese":"番茄"},{"english":"watermelon","chinese":"西瓜"},{"english":"bowl","chinese":"碗"},{"english":"chopsticks","chinese":"筷子"},{"english":"dish","chinese":"盤子；菜餚"},{"english":"fork","chinese":"叉子"},{"english":"knife","chinese":"刀子"},{"english":"plate","chinese":"盤子"},{"english":"spoon","chinese":"湯匙"},{"english":"clothes","chinese":"衣服"},{"english":"T-shirt","chinese":"T恤"},{"english":"shirt","chinese":"襯衫"},{"english":"sweater","chinese":"毛衣"},{"english":"jacket","chinese":"夾克"},{"english":"coat","chinese":"大衣"},{"english":"uniform","chinese":"制服"},{"english":"dress","chinese":"洋裝"},{"english":"skirt","chinese":"裙子"},{"english":"pants","chinese":"長褲"},{"english":"shorts","chinese":"短褲"},{"english":"belt","chinese":"皮帶"},{"english":"shoes","chinese":"鞋子"},{"english":"socks","chinese":"襪子"},{"english":"hat","chinese":"帽子"},{"english":"cap","chinese":"（無邊）帽"},{"english":"glasses","chinese":"眼鏡"},{"english":"sun glasses","chinese":"墨鏡"},{"english":"tie","chinese":"領帶；繫"},{"english":"bow","chinese":"蝴蝶結"},{"english":"ring","chinese":"戒指"},{"english":"bag","chinese":"袋子"},{"english":"wallet","chinese":"錢包"},{"english":"button","chinese":"鈕扣"},{"english":"comb","chinese":"梳子"},{"english":"glove","chinese":"手套"},{"english":"mask","chinese":"面具"},{"english":"pocket","chinese":"口袋"},{"english":"umbrella","chinese":"雨傘"},{"english":"wear","chinese":"穿"},{"english":"dress up","chinese":"裝扮"},{"english":"hobby","chinese":"嗜好"},{"english":"play","chinese":"玩；彈奏樂器"},{"english":"game","chinese":"比賽；遊戲"},{"english":"lose","chinese":"輸"},{"english":"win","chinese":"贏"},{"english":"fan","chinese":"狂熱愛好者"},{"english":"race","chinese":"賽跑"},{"english":"jog","chinese":"慢跑"},{"english":"run","chinese":"跑"},{"english":"camp","chinese":"露營"},{"english":"climb","chinese":"爬"},{"english":"hike","chinese":"健行"},{"english":"picnic","chinese":"野餐"},{"english":"sail","chinese":"航行"},{"english":"exercise","chinese":"運動"},{"english":"badminton","chinese":"羽毛球"},{"english":"baseball","chinese":"棒球"},{"english":"basketball","chinese":"籃球"},{"english":"soccer","chinese":"足球"},{"english":"sports","chinese":"運動"},{"english":"tennis","chinese":"網球"},{"english":"surf","chinese":"衝浪"},{"english":"swim","chinese":"游泳"},{"english":"kite","chinese":"風箏"},{"english":"stamp","chinese":"郵票"},{"english":"comic","chinese":"連環漫畫"},{"english":"trip","chinese":"（短程）旅行"},{"english":"dance","chinese":"跳舞"},{"english":"draw","chinese":"畫"},{"english":"paint","chinese":"繪畫"},{"english":"music","chinese":"音樂"},{"english":"band","chinese":"樂團"},{"english":"sing","chinese":"唱歌"},{"english":"song","chinese":"歌曲"},{"english":"drum","chinese":"鼓"},{"english":"guitar","chinese":"吉他"},{"english":"violin","chinese":"小提琴"},{"english":"piano","chinese":"鋼琴"},{"english":"movie","chinese":"電影"},{"english":"team","chinese":"團隊"},{"english":"toy","chinese":"玩具"},{"english":"doll","chinese":"洋娃娃"},{"english":"building","chinese":"建築物"},{"english":"apartment","chinese":"公寓"},{"english":"room","chinese":"房間"},{"english":"living room","chinese":"客廳"},{"english":"dining room","chinese":"飯廳"},{"english":"bathroom","chinese":"浴室"},{"english":"bedroom","chinese":"臥室"},{"english":"kitchen","chinese":"廚房"},{"english":"garden","chinese":"花園"},{"english":"yard","chinese":"庭院"},{"english":"balcony","chinese":"陽台"},{"english":"door","chinese":"門"},{"english":"gate","chinese":"大門"},{"english":"floor","chinese":"地板"},{"english":"stairs","chinese":"樓梯"},{"english":"wall","chinese":"牆壁"},{"english":"window","chinese":"窗戶"},{"english":"bath","chinese":"洗澡"},{"english":"bed","chinese":"床"},{"english":"bench","chinese":"長椅"},{"english":"chair","chinese":"椅子"},{"english":"couch","chinese":"沙發"},{"english":"desk","chinese":"書桌"},{"english":"drawer","chinese":"抽屜"},{"english":"lamp","chinese":"燈"},{"english":"sofa","chinese":"沙發"},{"english":"table","chinese":"桌子"},{"english":"blanket","chinese":"毯子"},{"english":"towel","chinese":"毛巾"},{"english":"camera","chinese":"照相機"},{"english":"computer","chinese":"電腦"},{"english":"machine","chinese":"機器"},{"english":"radio","chinese":"收音機"},{"english":"refrigerator (fridge)","chinese":"冰箱"},{"english":"telephone (phone)","chinese":"電話"},{"english":"television (TV)","chinese":"電視"},{"english":"basket","chinese":"籃子"},{"english":"candle","chinese":"蠟燭"},{"english":"key","chinese":"鑰匙"},{"english":"pot","chinese":"罐；壺；鍋子"},{"english":"build","chinese":"建造"},{"english":"clean","chinese":"打掃"},{"english":"fix","chinese":"修理"},{"english":"wash","chinese":"清洗"},{"english":"road","chinese":"道路"},{"english":"street","chinese":"街道"},{"english":"school","chinese":"學校"},{"english":"elementary school","chinese":"小學"},{"english":"junior high school","chinese":"國中"},{"english":"senior high school","chinese":"高中"},{"english":"class","chinese":"班級"},{"english":"classroom","chinese":"教室"},{"english":"blackboard","chinese":"黑板"},{"english":"chalk","chinese":"粉筆"},{"english":"library","chinese":"圖書館"},{"english":"dictionary","chinese":"字典"},{"english":"workbook","chinese":"作業本"},{"english":"map","chinese":"地圖"},{"english":"picture","chinese":"圖片；照片"},{"english":"notebook","chinese":"筆記本；筆電"},{"english":"page","chinese":"頁"},{"english":"paper","chinese":"紙"},{"english":"envelope","chinese":"信封"},{"english":"glue","chinese":"膠水"},{"english":"letter","chinese":"信"},{"english":"marker","chinese":"簽字筆"},{"english":"postcard","chinese":"明信片"},{"english":"ruler","chinese":"尺"},{"english":"club","chinese":"社團"},{"english":"gym","chinese":"體育館"},{"english":"playground","chinese":"操場"},{"english":"seesaw","chinese":"蹺蹺板"},{"english":"slide","chinese":"滑梯"},{"english":"swing","chinese":"鞦韆"},{"english":"course","chinese":"課程"},{"english":"lesson","chinese":"課"},{"english":"art","chinese":"美術"},{"english":"Chinese","chinese":"中文"},{"english":"English","chinese":"英語"},{"english":"history","chinese":"歷史"},{"english":"language","chinese":"語言"},{"english":"math","chinese":"數學"},{"english":"PE","chinese":"體育"},{"english":"science","chinese":"科學"},{"english":"classmate","chinese":"同學"},{"english":"friend","chinese":"朋友"},{"english":"student","chinese":"學生"},{"english":"teacher","chinese":"教師"},{"english":"learn","chinese":"學習"},{"english":"teach","chinese":"教導"},{"english":"answer","chinese":"回答"},{"english":"ask","chinese":"問"},{"english":"explain","chinese":"解釋"},{"english":"example","chinese":"例子"},{"english":"meaning","chinese":"意義"},{"english":"problem","chinese":"（須解決的）問題"},{"english":"question","chinese":"問題；疑問"},{"english":"repeat","chinese":"重複"},{"english":"mark","chinese":"做記號"},{"english":"practice","chinese":"練習"},{"english":"prepare","chinese":"準備"},{"english":"write","chinese":"寫"},{"english":"listen","chinese":"聽"},{"english":"read","chinese":"閱讀"},{"english":"pass","chinese":"通過"},{"english":"fail","chinese":"失敗"},{"english":"say","chinese":"說(字、句子)"},{"english":"speak","chinese":"說(語言)"},{"english":"spell","chinese":"拼字"},{"english":"talk","chinese":"說話"},{"english":"understand","chinese":"了解"},{"english":"homework","chinese":"功課"},{"english":"knowledge","chinese":"知識"},{"english":"grade","chinese":"成績；年級"},{"english":"exam","chinese":"考試"},{"english":"quiz","chinese":"小考"},{"english":"test","chinese":"考試"},{"english":"here","chinese":"這裡"},{"english":"there","chinese":"那裡"},{"english":"front","chinese":"前面"},{"english":"middle","chinese":"中間的"},{"english":"left","chinese":"左邊"},{"english":"right","chinese":"右邊"},{"english":"east","chinese":"東方"},{"english":"west","chinese":"西方"},{"english":"south","chinese":"南方"},{"english":"north","chinese":"北方"},{"english":"top","chinese":"頂端"},{"english":"corner","chinese":"轉角"},{"english":"bakery","chinese":"麵包店"},{"english":"bank","chinese":"銀行；河岸"},{"english":"beach","chinese":"海灘"},{"english":"bookstore","chinese":"書店"},{"english":"church","chinese":"教堂"},{"english":"factory","chinese":"工廠"},{"english":"hospital","chinese":"醫院"},{"english":"hotel","chinese":"旅社；飯店"},{"english":"market","chinese":"市場"},{"english":"museum","chinese":"博物館"},{"english":"office","chinese":"辦公室"},{"english":"park","chinese":"公園"},{"english":"pool","chinese":"游泳池"},{"english":"restroom","chinese":"洗手間"},{"english":"shop","chinese":"商店"},{"english":"supermarket","chinese":"超級市場"},{"english":"temple","chinese":"寺廟"},{"english":"theater","chinese":"戲院"},{"english":"zoo","chinese":"動物園"},{"english":"city","chinese":"城市"},{"english":"country","chinese":"鄉村"},{"english":"farm","chinese":"農田"},{"english":"place","chinese":"地方"},{"english":"town","chinese":"城鎮"},{"english":"airplane (plane)","chinese":"飛機"},{"english":"bicycle (bike)","chinese":"腳踏車"},{"english":"boat","chinese":"船"},{"english":"motorcycle","chinese":"機車"},{"english":"scooter","chinese":"小型機車"},{"english":"ship","chinese":"船"},{"english":"taxi","chinese":"計程車"},{"english":"train","chinese":"火車"},{"english":"truck","chinese":"卡車"},{"english":"airport","chinese":"機場"},{"english":"station","chinese":"車站"},{"english":"block","chinese":"街區"},{"english":"bridge","chinese":"橋"},{"english":"sidewalk","chinese":"人行道"},{"english":"traffic","chinese":"交通"},{"english":"arrive","chinese":"到達"},{"english":"cross","chinese":"越過"},{"english":"drive","chinese":"駕駛"},{"english":"fly","chinese":"飛"},{"english":"take off","chinese":"起飛"},{"english":"land","chinese":"著陸"},{"english":"ride","chinese":"騎"},{"english":"turn","chinese":"轉彎"},{"english":"fast","chinese":"快的"},{"english":"quick","chinese":"迅速的"},{"english":"slow","chinese":"慢的"},{"english":"world","chinese":"世界"},{"english":"area","chinese":"區域"},{"english":"Taiwan","chinese":"臺灣"},{"english":"China","chinese":"中國"},{"english":"America (USA)","chinese":"美國"},{"english":"Japan","chinese":"日本"},{"english":"Korea","chinese":"韓國"},{"english":"Africa","chinese":"非洲"},{"english":"festival","chinese":"節慶"},{"english":"holiday","chinese":"假日"},{"english":"vacation","chinese":"假期"},{"english":"culture","chinese":"文化"},{"english":"celebrate","chinese":"慶祝"},{"english":"Christmas","chinese":"聖誕節"},{"english":"Easter","chinese":"復活節"},{"english":"Halloween","chinese":"萬聖節"},{"english":"Chinese New Year","chinese":"春節"},{"english":"New Year's Eve","chinese":"除夕"},{"english":"New Year's Day","chinese":"元旦；新年"},{"english":"Double Tenth Day","chinese":"雙十節"},{"english":"Dragon-boat Festival","chinese":"端午節"},{"english":"Lantern Festival","chinese":"元宵節"},{"english":"Moon Festival","chinese":"中秋節"},{"english":"Teacher's Day","chinese":"教師節"},{"english":"Mother's Day","chinese":"母親節"},{"english":"Father's Day","chinese":"父親節"},{"english":"Thanksgiving","chinese":"感恩節"},{"english":"Valentine's Day","chinese":"情人節"},{"english":"weather","chinese":"天氣"},{"english":"clear","chinese":"晴朗的"},{"english":"cloudy","chinese":"多雲的"},{"english":"rainy","chinese":"下雨的"},{"english":"snowy","chinese":"下雪的"},{"english":"windy","chinese":"多風的"},{"english":"sunny","chinese":"陽光普照的"},{"english":"cool","chinese":"涼爽的"},{"english":"warm","chinese":"溫暖的"},{"english":"dry","chinese":"乾的"},{"english":"wet","chinese":"濕的"},{"english":"snow","chinese":"下雪"},{"english":"rain","chinese":"下雨"},{"english":"shower","chinese":"陣雨"},{"english":"nature","chinese":"自然"},{"english":"rainbow","chinese":"彩虹"},{"english":"typhoon","chinese":"颱風"},{"english":"wind","chinese":"風"},{"english":"cloud","chinese":"雲"},{"english":"blow","chinese":"吹"},{"english":"shine","chinese":"照耀"},{"english":"earth","chinese":"地球"},{"english":"earthquake","chinese":"地震"},{"english":"moon","chinese":"月亮"},{"english":"sky","chinese":"天空"},{"english":"sun","chinese":"太陽"},{"english":"star","chinese":"星星"},{"english":"hill","chinese":"小山"},{"english":"island","chinese":"島嶼"},{"english":"lake","chinese":"湖"},{"english":"mountain","chinese":"山"},{"english":"pond","chinese":"池塘"},{"english":"river","chinese":"河"},{"english":"sea","chinese":"海"},{"english":"hot spring","chinese":"溫泉"},{"english":"animal","chinese":"動物"},{"english":"bear","chinese":"熊"},{"english":"cow","chinese":"母牛"},{"english":"duck","chinese":"鴨"},{"english":"elephant","chinese":"大象"},{"english":"fox","chinese":"狐狸"},{"english":"frog","chinese":"青蛙"},{"english":"goat","chinese":"山羊"},{"english":"goose","chinese":"鵝（單數）"},{"english":"geese","chinese":"鵝（複數）"},{"english":"hen","chinese":"母雞"},{"english":"horse","chinese":"馬"},{"english":"lion","chinese":"獅子"},{"english":"monkey","chinese":"猴子"},{"english":"mouse","chinese":"老鼠（單數）"},{"english":"mice","chinese":"老鼠（複數）"},{"english":"pet","chinese":"寵物"},{"english":"puppy","chinese":"小狗"},{"english":"rabbit","chinese":"兔子"},{"english":"rat","chinese":"（大）老鼠"},{"english":"sheep","chinese":"綿羊"},{"english":"tiger","chinese":"老虎"},{"english":"zebra","chinese":"斑馬"},{"english":"insect","chinese":"昆蟲"},{"english":"ant","chinese":"螞蟻"},{"english":"bat","chinese":"蝙蝠"},{"english":"bee","chinese":"蜜蜂"},{"english":"bug","chinese":"小蟲"},{"english":"butterfly","chinese":"蝴蝶"},{"english":"snake","chinese":"蛇"},{"english":"spider","chinese":"蜘蛛"},{"english":"turtle","chinese":"烏龜"},{"english":"bite","chinese":"咬"},{"english":"tail","chinese":"尾巴"},{"english":"another","chinese":"另一個的"},{"english":"anyone (anybody)","chinese":"任何人"},{"english":"anything","chinese":"任何事物"},{"english":"each","chinese":"每一(的)"},{"english":"everyone (everybody)","chinese":"每一個人"},{"english":"everything","chinese":"每件事"},{"english":"most","chinese":"大部分"},{"english":"nobody","chinese":"沒有人"},{"english":"nothing","chinese":"沒東西；沒事"},{"english":"other","chinese":"其他的"},{"english":"part","chinese":"部分"},{"english":"someone (somebody)","chinese":"某人"},{"english":"something","chinese":"某事"},{"english":"about","chinese":"關於"},{"english":"above","chinese":"在…上方"},{"english":"across","chinese":"在…對面"},{"english":"after","chinese":"在…之後"},{"english":"along","chinese":"沿著"},{"english":"around","chinese":"在…四周"},{"english":"before","chinese":"在…之前"},{"english":"behind","chinese":"在…後面"},{"english":"below","chinese":"在…下方"},{"english":"beside","chinese":"在…旁邊"},{"english":"between","chinese":"在…之間"},{"english":"by","chinese":"藉著"},{"english":"down","chinese":"向下"},{"english":"during","chinese":"在…期間"},{"english":"except","chinese":"除了…之外"},{"english":"from","chinese":"從"},{"english":"in","chinese":"在…裡面"},{"english":"inside","chinese":"在…內部"},{"english":"into","chinese":"到…之內"},{"english":"like","chinese":"像；如"},{"english":"near","chinese":"在…附近"},{"english":"of","chinese":"…的"},{"english":"off","chinese":"離開；除掉"},{"english":"on","chinese":"在…上面"},{"english":"out","chinese":"在外"},{"english":"outside","chinese":"在…外部"},{"english":"over","chinese":"在…上方"},{"english":"since","chinese":"自從"},{"english":"than","chinese":"比…"},{"english":"through","chinese":"穿過"},{"english":"under","chinese":"在…之下"},{"english":"until","chinese":"直到"},{"english":"up","chinese":"向上"},{"english":"with","chinese":"和"},{"english":"without","chinese":"沒有"},{"english":"as","chinese":"像；如同…那樣"},{"english":"because","chinese":"因為"},{"english":"but","chinese":"但是"},{"english":"however","chinese":"然而"},{"english":"if","chinese":"如果"},{"english":"or","chinese":"或"},{"english":"although","chinese":"雖然"},{"english":"action","chinese":"動作"},{"english":"age","chinese":"年齡"},{"english":"battery","chinese":"電池"},{"english":"bell","chinese":"鈴"},{"english":"blank","chinese":"空格"},{"english":"can","chinese":"罐"},{"english":"case","chinese":"情形；個案"},{"english":"castle","chinese":"城堡"},{"english":"cellphone","chinese":"手機"},{"english":"center","chinese":"中心"},{"english":"chance","chinese":"機會"},{"english":"cheer","chinese":"歡呼"},{"english":"choice","chinese":"選擇；抉擇"},{"english":"dream","chinese":"夢"},{"english":"error","chinese":"錯誤"},{"english":"eve","chinese":"前夕"},{"english":"excuse","chinese":"藉口"},{"english":"experience","chinese":"經驗"},{"english":"fact","chinese":"事實"},{"english":"fire","chinese":"火焰"},{"english":"flashlight","chinese":"手電筒"},{"english":"flower","chinese":"花朵"},{"english":"fun","chinese":"樂趣"},{"english":"garbage","chinese":"垃圾"},{"english":"gas","chinese":"瓦斯"},{"english":"ghost","chinese":"鬼"},{"english":"gift","chinese":"禮物；天賦"},{"english":"god","chinese":"上帝"},{"english":"grass","chinese":"草"},{"english":"ground","chinese":"地面"},{"english":"group","chinese":"團體"},{"english":"habit","chinese":"習慣"},{"english":"heat","chinese":"熱度"},{"english":"honey","chinese":"蜂蜜"},{"english":"idea","chinese":"主意"},{"english":"interest","chinese":"興趣"},{"english":"Internet (Net)","chinese":"網路"},{"english":"interview","chinese":"採訪；面試"},{"english":"item","chinese":"項目"},{"english":"joke","chinese":"笑話"},{"english":"joy","chinese":"歡欣"},{"english":"leader","chinese":"領導者"},{"english":"class leader","chinese":"班長"},{"english":"level","chinese":"水平的；水平線"},{"english":"mail","chinese":"信件"},{"english":"matter","chinese":"事情；要緊"},{"english":"meeting","chinese":"會議"},{"english":"member","chinese":"會員"},{"english":"metro","chinese":"捷運"},{"english":"mind","chinese":"頭腦"},{"english":"mistake","chinese":"錯誤"},{"english":"mud","chinese":"泥巴"},{"english":"news","chinese":"消息；新聞"},{"english":"newspaper","chinese":"報紙"},{"english":"noise","chinese":"噪音"},{"english":"note","chinese":"筆記；紙條"},{"english":"party","chinese":"派對"},{"english":"photo","chinese":"相片"},{"english":"pin","chinese":"大頭針；別針；飾針"},{"english":"planet","chinese":"行星"},{"english":"player","chinese":"球員；玩家；播放器"},{"english":"pleasure","chinese":"愉快"},{"english":"power","chinese":"動力；權力；電力"},{"english":"present","chinese":"禮物"},{"english":"prize","chinese":"獎品；獎金"},{"english":"program","chinese":"節目；程式"},{"english":"reason","chinese":"理由"},{"english":"report","chinese":"報導；報告"},{"english":"robot","chinese":"機器人"},{"english":"rock","chinese":"岩石"},{"english":"root","chinese":"根"},{"english":"rope","chinese":"繩子"},{"english":"rose","chinese":"玫瑰"},{"english":"rule","chinese":"規則"},{"english":"seat","chinese":"座位"},{"english":"seed","chinese":"種子"},{"english":"sale","chinese":"出售"},{"english":"screen","chinese":"螢幕"},{"english":"sentence","chinese":"句子"},{"english":"service","chinese":"服務"},{"english":"set","chinese":"套；組"},{"english":"side","chinese":"旁邊；邊；面"},{"english":"sight","chinese":"視力"},{"english":"smile","chinese":"微笑"},{"english":"space","chinese":"空間"},{"english":"story","chinese":"故事"},{"english":"string","chinese":"線；串"},{"english":"subject","chinese":"科目；主題"},{"english":"thing","chinese":"事情"},{"english":"ticket","chinese":"票券；罰單"},{"english":"tip","chinese":"小費；訣竅"},{"english":"tool","chinese":"工具"},{"english":"topic","chinese":"話題；主題"},{"english":"trash","chinese":"垃圾"},{"english":"treat","chinese":"請客"},{"english":"trick","chinese":"惡作劇"},{"english":"trouble","chinese":"麻煩"},{"english":"voice","chinese":"聲音"},{"english":"way","chinese":"道路；方法"},{"english":"word","chinese":"字"},{"english":"feel","chinese":"覺得"},{"english":"hear","chinese":"聽"},{"english":"look","chinese":"看"},{"english":"see","chinese":"看"},{"english":"smell","chinese":"聞起來"},{"english":"sound","chinese":"聽起來"},{"english":"taste","chinese":"品嚐"},{"english":"end","chinese":"結束"},{"english":"finish","chinese":"完成"},{"english":"believe","chinese":"相信"},{"english":"forget","chinese":"忘記"},{"english":"guess","chinese":"猜想"},{"english":"hate","chinese":"討厭"},{"english":"hope","chinese":"希望"},{"english":"know","chinese":"知道"},{"english":"love","chinese":"喜愛"},{"english":"need","chinese":"需要"},{"english":"notice","chinese":"注意到"},{"english":"remember","chinese":"記得"},{"english":"surprise","chinese":"使…驚訝"},{"english":"think","chinese":"想；思考"},{"english":"want","chinese":"想要"},{"english":"wish","chinese":"祝福"},{"english":"worry","chinese":"擔心"},{"english":"break","chinese":"打破"},{"english":"bring","chinese":"帶來"},{"english":"brush","chinese":"刷"},{"english":"carry","chinese":"攜帶"},{"english":"catch","chinese":"趕上"},{"english":"cheat","chinese":"欺騙；作弊"},{"english":"choose","chinese":"選擇；挑選"},{"english":"clap","chinese":"拍手"},{"english":"close","chinese":"關上"},{"english":"come","chinese":"來"},{"english":"collect","chinese":"收集"},{"english":"correct","chinese":"訂正"},{"english":"copy","chinese":"抄寫；複製"},{"english":"count","chinese":"計算"},{"english":"cover","chinese":"覆蓋；掩護"},{"english":"cry","chinese":"哭"},{"english":"cut","chinese":"切"},{"english":"dig","chinese":"挖掘"},{"english":"define","chinese":"解釋；給…下定義"},{"english":"drop","chinese":"掉落"},{"english":"enter","chinese":"進入"},{"english":"feed","chinese":"餵"},{"english":"fight","chinese":"打架"},{"english":"follow","chinese":"遵循；跟隨"},{"english":"fry","chinese":"油炸"},{"english":"go","chinese":"去；變得…"},{"english":"hand","chinese":"給；傳遞"},{"english":"hang","chinese":"懸掛"},{"english":"help","chinese":"幫忙"},{"english":"hit","chinese":"打擊"},{"english":"hold","chinese":"拿著"},{"english":"hunt","chinese":"打獵"},{"english":"hurry","chinese":"趕忙"},{"english":"jump","chinese":"跳躍"},{"english":"kick","chinese":"踢"},{"english":"knock","chinese":"敲"},{"english":"kill","chinese":"殺"},{"english":"kiss","chinese":"吻"},{"english":"laugh","chinese":"笑"},{"english":"leave","chinese":"離開；遺留"},{"english":"list","chinese":"把…列入名單"},{"english":"make","chinese":"製作；使…"},{"english":"meet","chinese":"遇見"},{"english":"miss","chinese":"想念；錯誤"},{"english":"move","chinese":"移動；搬家"},{"english":"open","chinese":"打開；開放"},{"english":"pack","chinese":"（把…）打包"},{"english":"paste","chinese":"黏貼"},{"english":"pick","chinese":"撿拾；挑選"},{"english":"plant","chinese":"栽種"},{"english":"pull","chinese":"拉"},{"english":"push","chinese":"推"},{"english":"put","chinese":"放"},{"english":"rise","chinese":"升起"},{"english":"roll","chinese":"滾動"},{"english":"rest","chinese":"休息"},{"english":"shake","chinese":"搖動"},{"english":"shout","chinese":"喊叫"},{"english":"smoke","chinese":"抽菸"},{"english":"sign","chinese":"簽字"},{"english":"stand","chinese":"站立"},{"english":"take","chinese":"拿；花時間"},{"english":"tell","chinese":"告訴"},{"english":"throw","chinese":"丟"},{"english":"touch","chinese":"碰觸；感動"},{"english":"type","chinese":"打字"},{"english":"use","chinese":"使用"},{"english":"walk","chinese":"走路"},{"english":"wave","chinese":"揮手"},{"english":"mop","chinese":"拖地"},{"english":"agree","chinese":"同意"},{"english":"allow","chinese":"允許"},{"english":"appear","chinese":"出現；似乎"},{"english":"attack","chinese":"攻擊"},{"english":"become","chinese":"變成"},{"english":"begin","chinese":"開始"},{"english":"belong","chinese":"屬於"},{"english":"call","chinese":"打電話"},{"english":"care","chinese":"關心"},{"english":"check","chinese":"檢查"},{"english":"date","chinese":"約會"},{"english":"deal","chinese":"處理；對付"},{"english":"decide","chinese":"決定"},{"english":"die","chinese":"死掉"},{"english":"download","chinese":"下載"},{"english":"enjoy","chinese":"享受"},{"english":"expect","chinese":"期待"},{"english":"fall","chinese":"跌落"},{"english":"fill","chinese":"裝滿"},{"english":"find","chinese":"找到"},{"english":"get","chinese":"得到；變得…"},{"english":"give","chinese":"給予"},{"english":"happen","chinese":"發生(沒有被動式)"},{"english":"hide","chinese":"隱藏；躲藏"},{"english":"hurt","chinese":"受傷"},{"english":"invite","chinese":"邀請"},{"english":"join","chinese":"加入"},{"english":"keep","chinese":"保持"},{"english":"lead","chinese":"引導"},{"english":"let","chinese":"讓"},{"english":"lie","chinese":"說謊；躺臥"},{"english":"mean","chinese":"意指"},{"english":"own","chinese":"擁有"},{"english":"plan","chinese":"計畫"},{"english":"please","chinese":"使…滿意"},{"english":"pray","chinese":"祈禱"},{"english":"raise","chinese":"舉起；養育；增加；募款"},{"english":"reach","chinese":"到；伸出"},{"english":"save","chinese":"節省；挽救；儲存"},{"english":"sell","chinese":"賣"},{"english":"send","chinese":"寄"},{"english":"share","chinese":"分享"},{"english":"show","chinese":"顯示"},{"english":"sit","chinese":"坐"},{"english":"sleep","chinese":"睡覺"},{"english":"start","chinese":"開始"},{"english":"stay","chinese":"停留"},{"english":"stop","chinese":"停"},{"english":"thank","chinese":"謝謝"},{"english":"try","chinese":"嘗試"},{"english":"upload","chinese":"上傳"},{"english":"visit","chinese":"參觀"},{"english":"wait","chinese":"等待"},{"english":"wake","chinese":"醒來"},{"english":"welcome","chinese":"歡迎"},{"english":"able","chinese":"能夠…的"},{"english":"American","chinese":"美國的"},{"english":"common","chinese":"共同的"},{"english":"convenient","chinese":"方便的"},{"english":"dangerous","chinese":"危險的"},{"english":"dark","chinese":"黑暗的"},{"english":"dead","chinese":"死的"},{"english":"dear","chinese":"親愛的"},{"english":"different","chinese":"不同的"},{"english":"difficult","chinese":"困難的"},{"english":"dirty","chinese":"骯髒的"},{"english":"easy","chinese":"容易的"},{"english":"else","chinese":"其他的"},{"english":"enough","chinese":"足夠的"},{"english":"excellent","chinese":"極好的"},{"english":"favorite","chinese":"最喜愛的"},{"english":"fine","chinese":"很好的"},{"english":"foreign","chinese":"外國的"},{"english":"free","chinese":"空閒的；免費的"},{"english":"fresh","chinese":"新鮮的"},{"english":"glad","chinese":"高興的"},{"english":"hard","chinese":"困難的；硬的"},{"english":"helpful","chinese":"有幫助的"},{"english":"important","chinese":"重要的"},{"english":"loud","chinese":"大聲的"},{"english":"lucky","chinese":"幸運的"},{"english":"magic","chinese":"神奇的"},{"english":"main","chinese":"最主要的"},{"english":"modern","chinese":"現代化的"},{"english":"national","chinese":"國家的"},{"english":"new","chinese":"新的"},{"english":"only","chinese":"僅有的；唯一的"},{"english":"pop","chinese":"流行的"},{"english":"possible","chinese":"可能的"},{"english":"public","chinese":"公立的；公眾的"},{"english":"ready","chinese":"準備好的"},{"english":"real","chinese":"真的"},{"english":"safe","chinese":"安全的"},{"english":"same","chinese":"相同的"},{"english":"sharp","chinese":"尖銳的"},{"english":"simple","chinese":"簡單的"},{"english":"sorry","chinese":"抱歉的；悲傷的"},{"english":"special","chinese":"特別的"},{"english":"sure","chinese":"確定的"},{"english":"tidy","chinese":"整潔的"},{"english":"true","chinese":"真實的"},{"english":"useful","chinese":"有用的"},{"english":"wonderful","chinese":"極好的"},{"english":"wrong","chinese":"錯誤的"},{"english":"always","chinese":"總是"},{"english":"ever","chinese":"曾經"},{"english":"never","chinese":"從不"},{"english":"often","chinese":"時常"},{"english":"seldom","chinese":"很少"},{"english":"sometimes","chinese":"有時候"},{"english":"usually","chinese":"通常"},{"english":"actually","chinese":"實際上"},{"english":"again","chinese":"再一次"},{"english":"also","chinese":"也"},{"english":"away","chinese":"遠離"},{"english":"too","chinese":"也；太…"},{"english":"almost","chinese":"幾乎"},{"english":"even","chinese":"甚至"},{"english":"finally","chinese":"最後"},{"english":"just","chinese":"只是；剛才"},{"english":"least","chinese":"最少"},{"english":"maybe","chinese":"也許"},{"english":"perhaps","chinese":"或許"},{"english":"probably","chinese":"大概；很可能"},{"english":"really","chinese":"真地"},{"english":"still","chinese":"仍然"},{"english":"then","chinese":"那時"},{"english":"together","chinese":"一起"},{"english":"twice","chinese":"兩次"},{"english":"quite","chinese":"相當"},{"english":"yet","chinese":"尚未"},{"english":"abroad","chinese":"在國外"},{"english":"ahead","chinese":"在前方"},{"english":"somewhere","chinese":"某處"},{"english":"either","chinese":"也不"}];
+
+// Deduplicate vocab by english key (keep first occurrence)
+const seen = new Set();
+const WORDS = VOCAB.filter(w => {
+  if (seen.has(w.english)) return false;
+  seen.add(w.english);
+  return true;
+});
+
+// Game state
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let wrongAttempts = 0;
+let results = []; // {word, correct: bool}
+let locked = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickQuestions() {
+  return shuffle(WORDS).slice(0, 20);
+}
+
+function getChoices(correctWord) {
+  const distractors = shuffle(WORDS.filter(w => w.english !== correctWord.english)).slice(0, 3);
+  return shuffle([correctWord, ...distractors]);
+}
+
+function startGame() {
+  questions = pickQuestions().map(q => ({
+    word: q,
+    choices: getChoices(q),
+    wrongCount: 0,
+    everWrong: false,
+  }));
+  currentQ = 0;
+  score = 0;
+  results = [];
+  locked = false;
+
+  show('game-screen');
+  hide('start-screen');
+  hide('result-screen');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  wrongAttempts = q.wrongCount;
+
+  document.getElementById('q-current').textContent = currentQ + 1;
+  document.getElementById('score-display').textContent = score;
+  document.getElementById('progress-bar').style.width = ((currentQ / 20) * 100) + '%';
+  document.getElementById('q-word').textContent = q.word.english;
+
+  // Dots
+  const dots = document.getElementById('attempt-dots');
+  dots.innerHTML = '';
+  for (let i = 0; i < q.wrongCount; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot wrong';
+    dots.appendChild(d);
+  }
+
+  // Feedback
+  hideFeedback();
+
+  // Choices
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+  q.choices.forEach(choice => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = choice.chinese;
+    btn.onclick = () => handleAnswer(choice, btn, q);
+    container.appendChild(btn);
+  });
+
+  locked = false;
+}
+
+function handleAnswer(choice, btn, q) {
+  if (locked) return;
+
+  const isCorrect = choice.english === q.word.english;
+
+  if (isCorrect) {
+    locked = true;
+    btn.classList.add('correct-ans');
+    showFeedback(true);
+    playCorrectSfx();
+
+    // Disable all
+    disableChoices();
+
+    if (!q.everWrong) score++;
+    document.getElementById('score-display').textContent = score;
+
+    results.push({ word: q.word, correct: !q.everWrong });
+
+    setTimeout(() => {
+      currentQ++;
+      if (currentQ >= 20) {
+        playFinishSfx();
+        showResults();
+      } else {
+        renderQuestion();
+      }
+    }, 800);
+  } else {
+    q.wrongCount++;
+    q.everWrong = true;
+    btn.classList.add('wrong-ans');
+    showFeedback(false);
+    playWrongSfx();
+
+    // Shake the question card
+    const card = document.getElementById('question-card');
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+
+    // Update dots
+    const dots = document.getElementById('attempt-dots');
+    const d = document.createElement('div');
+    d.className = 'dot wrong';
+    dots.appendChild(d);
+
+    // Re-enable correct choice highlight after short delay, reset wrong btn
+    setTimeout(() => {
+      btn.classList.remove('wrong-ans');
+      hideFeedback();
+    }, 700);
+  }
+}
+
+function disableChoices() {
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+}
+
+function showFeedback(correct) {
+  const fb = document.getElementById('feedback-banner');
+  fb.textContent = correct ? '🎉 Great!' : '❌ Try again!';
+  fb.className = 'feedback-banner show ' + (correct ? 'correct' : 'wrong');
+}
+
+function hideFeedback() {
+  const fb = document.getElementById('feedback-banner');
+  fb.className = 'feedback-banner';
+}
+
+function showResults() {
+  hide('game-screen');
+  show('result-screen');
+
+  const correct = results.filter(r => r.correct).length;
+  const wrong = results.filter(r => !r.correct).length;
+
+  document.getElementById('final-correct').textContent = correct;
+  document.getElementById('rs-correct').textContent = correct;
+  document.getElementById('rs-wrong').textContent = wrong;
+
+  // Emoji + title
+  let emoji, title;
+  if (correct === 20) { emoji = '🏆'; title = '完美！全部答對！'; }
+  else if (correct >= 16) { emoji = '🎉'; title = '太棒了！'; }
+  else if (correct >= 12) { emoji = '👍'; title = '不錯喔！繼續加油！'; }
+  else { emoji = '💪'; title = '繼續練習！你可以的！'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+
+  // Review list: wrong first, then correct
+  const wrongItems = results.filter(r => !r.correct);
+  const correctItems = results.filter(r => r.correct);
+  const ordered = [...wrongItems, ...correctItems];
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+
+  ordered.forEach((r, i) => {
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (r.correct ? 'correct-item' : 'wrong-item');
+    div.innerHTML = `
+      <span class="ri-num">${i + 1}</span>
+      <span class="ri-icon">${r.correct ? '✅' : '❌'}</span>
+      <span class="ri-en">${r.word.english}</span>
+      <span class="ri-zh">${r.word.chinese}</span>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+// ===================== AUDIO ENGINE =====================
+let audioCtx = null;
+let musicPlaying = false;
+let musicNodes = [];
+let scheduledIds = [];
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+// --- Sound Effects ---
+function playCorrectSfx() {
+  const ctx = getCtx();
+  const notes = [523.25, 659.25, 783.99]; // C5 E5 G5
+  notes.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    const t = ctx.currentTime + i * 0.1;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.22, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+    osc.start(t); osc.stop(t + 0.35);
+  });
+}
+
+function playWrongSfx() {
+  const ctx = getCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(220, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.25);
+  gain.gain.setValueAtTime(0.15, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+  osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.3);
+}
+
+function playFinishSfx() {
+  const ctx = getCtx();
+  const melody = [523.25, 659.25, 783.99, 1046.5];
+  melody.forEach((freq, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    const t = ctx.currentTime + i * 0.15;
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.2, t + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    osc.start(t); osc.stop(t + 0.55);
+  });
+}
+
+// --- Background Music (looping chiptune) ---
+// Scale: C major pentatonic [C4, E4, G4, A4, C5, E5, G5]
+const PENTA = [261.63, 329.63, 392.00, 440.00, 523.25, 659.25, 783.99];
+const BASS =  [130.81, 164.81, 196.00, 220.00, 261.63];
+
+function makeMusicLoop() {
+  const ctx = getCtx();
+  const masterGain = ctx.createGain();
+  masterGain.gain.value = 0.18;
+  masterGain.connect(ctx.destination);
+
+  const BPM = 128;
+  const beat = 60 / BPM;
+  const bar = beat * 4;
+
+  // Simple melodic pattern (16 steps, indexes into PENTA, -1 = rest)
+  const melodyPat = [4,4,5,3, 4,-1,5,5, 3,4,5,4, 2,-1,4,-1];
+  const bassPat   = [0,-1,2,-1, 1,-1,0,-1, 2,-1,3,-1, 0,-1,2,-1];
+
+  let startTime = ctx.currentTime + 0.05;
+  const loopBars = 4;
+  const totalSteps = 16 * loopBars;
+
+  function scheduleLoop(loopStart) {
+    for (let step = 0; step < 16; step++) {
+      const stepTime = loopStart + step * (beat / 2);
+
+      // Melody
+      const mIdx = melodyPat[step % 16];
+      if (mIdx >= 0) {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.connect(g); g.connect(masterGain);
+        osc.type = 'square';
+        osc.frequency.value = PENTA[mIdx];
+        g.gain.setValueAtTime(0, stepTime);
+        g.gain.linearRampToValueAtTime(0.5, stepTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.001, stepTime + beat * 0.45);
+        osc.start(stepTime); osc.stop(stepTime + beat * 0.5);
+        musicNodes.push(osc, g);
+      }
+
+      // Bass
+      const bIdx = bassPat[step % 16];
+      if (bIdx >= 0) {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.connect(g); g.connect(masterGain);
+        osc.type = 'triangle';
+        osc.frequency.value = BASS[bIdx];
+        g.gain.setValueAtTime(0, stepTime);
+        g.gain.linearRampToValueAtTime(0.6, stepTime + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, stepTime + beat * 0.9);
+        osc.start(stepTime); osc.stop(stepTime + beat);
+        musicNodes.push(osc, g);
+      }
+
+      // Hi-hat on every step
+      {
+        const bufSize = ctx.sampleRate * 0.05;
+        const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const hiFilter = ctx.createBiquadFilter();
+        hiFilter.type = 'highpass'; hiFilter.frequency.value = 7000;
+        const g = ctx.createGain();
+        src.connect(hiFilter); hiFilter.connect(g); g.connect(masterGain);
+        g.gain.setValueAtTime(step % 2 === 0 ? 0.3 : 0.12, stepTime);
+        g.gain.exponentialRampToValueAtTime(0.001, stepTime + 0.04);
+        src.start(stepTime); src.stop(stepTime + 0.05);
+        musicNodes.push(src, g);
+      }
+
+      // Kick on beats 1 and 3
+      if (step % 8 === 0 || step % 8 === 4) {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.connect(g); g.connect(masterGain);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(160, stepTime);
+        osc.frequency.exponentialRampToValueAtTime(40, stepTime + 0.15);
+        g.gain.setValueAtTime(0.8, stepTime);
+        g.gain.exponentialRampToValueAtTime(0.001, stepTime + 0.18);
+        osc.start(stepTime); osc.stop(stepTime + 0.2);
+        musicNodes.push(osc, g);
+      }
+    }
+
+    // Schedule next loop slightly before this one ends
+    const nextLoopStart = loopStart + 16 * (beat / 2);
+    const delay = (nextLoopStart - ctx.currentTime - 0.3) * 1000;
+    const id = setTimeout(() => {
+      if (musicPlaying) scheduleLoop(nextLoopStart);
+    }, Math.max(delay, 0));
+    scheduledIds.push(id);
+  }
+
+  musicNodes.push(masterGain);
+  scheduleLoop(startTime);
+}
+
+function stopMusic() {
+  musicPlaying = false;
+  scheduledIds.forEach(id => clearTimeout(id));
+  scheduledIds = [];
+  musicNodes.forEach(n => {
+    try { n.disconnect(); } catch(e) {}
+    if (n.stop) { try { n.stop(0); } catch(e) {} }
+  });
+  musicNodes = [];
+}
+
+function toggleMusic() {
+  const btn = document.getElementById('music-btn');
+  if (musicPlaying) {
+    stopMusic();
+    btn.textContent = '🔇';
+    btn.classList.remove('playing');
+  } else {
+    musicPlaying = true;
+    makeMusicLoop();
+    btn.textContent = '🎵';
+    btn.classList.add('playing');
+  }
+}
+</script>
+</body>
+</html>
